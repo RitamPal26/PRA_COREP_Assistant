@@ -1,0 +1,241 @@
+/* Reset & Base */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f5f7fa;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* --- Left Panel: Chat --- */
+.chat-panel {
+  width: 35%;
+  background: white;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-panel header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge {
+  background: #e0e7ff;
+  color: #4338ca;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.chat-window {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 8px;
+  max-width: 85%;
+  line-height: 1.4;
+  font-size: 0.95rem;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: #2563eb;
+  color: white;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.input-area {
+  padding: 20px;
+  background: white;
+  border-top: 1px solid #ddd;
+  display: flex;
+  gap: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.input-area button {
+  padding: 10px 20px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.input-area button:hover {
+  background-color: #1d4ed8;
+}
+
+/* --- Right Panel: Report --- */
+.report-panel {
+  width: 65%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.corep-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+.corep-table th, .corep-table td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: left;
+}
+
+.corep-table th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.data-cell {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #0f172a;
+  background-color: #fdfdfd;
+}
+
+.highlight-row {
+  background-color: #f0f9ff; /* Light blue highlight for updated rows */
+  transition: background-color 0.5s ease;
+}
+
+.empty {
+  color: #cbd5e1;
+}
+
+/* Audit Log Styling */
+.audit-log {
+  margin-top: 40px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.audit-card {
+  background: #fffbe6; /* Light yellow like a sticky note */
+  border-left: 4px solid #d97706;
+  padding: 15px;
+  font-size: 0.9rem;
+}
+
+.audit-card p {
+  margin: 5px 0;
+}
+
+/* --- Responsive Design (Mobile & Tablet) --- */
+@media (max-width: 768px) {
+  
+  /* 1. Stack the panels vertically instead of side-by-side */
+  .app-container {
+    flex-direction: column;
+    height: auto; /* Allow the page to grow */
+    min-height: 100vh;
+  }
+
+  /* 2. Make Chat take the top 40% of the screen */
+  .chat-panel {
+    width: 100%;
+    height: 40vh; 
+    border-right: none;
+    border-bottom: 4px solid #e5e7eb;
+  }
+
+  /* 3. Make Report take the rest of the space */
+  .report-panel {
+    width: 100%;
+    height: auto;
+    padding: 15px;
+  }
+
+  /* 4. Fix the Table for small screens */
+  .table-wrapper {
+    overflow-x: auto; /* Allow table to scroll sideways if too wide */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .corep-table {
+    min-width: 500px; /* Force table to keep its shape */
+  }
+
+  /* 5. Adjust Font Sizes */
+  h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* --- New Button Styles --- */
+
+/* Clear Chat Button (Simple Text) */
+.secondary-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #555;
+}
+.secondary-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Download CSV Button (Green Accent) */
+.download-btn {
+  background-color: #10b981; /* Green */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+  background-color: #059669; /* Darker Green */
+}
