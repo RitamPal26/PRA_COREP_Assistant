@@ -7,6 +7,9 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from schemas import CorepFieldUpdate, AnalysisResponse
+from fastapi import UploadFile
+import io
+from pypdf import PdfReader
 
 # Load environment variables
 load_dotenv()
@@ -50,21 +53,43 @@ def initialize_vector_store():
 def get_rag_response(query: str) -> AnalysisResponse:
     global vector_store
     
+    source_info = "System Memory" # Default source
+    context_text = ""
+
     # 1. Search the "Database" for relevant rules
     if vector_store:
+        # Retrieve the top 2 most relevant chunks
         docs = vector_store.similarity_search(query, k=2)
-        context_text = "\n\n".join([d.page_content for d in docs])
+        
+        # --- NEW: Metadata Extraction ---
+        if docs:
+            # We take the metadata from the most relevant doc (docs[0])
+            meta = docs[0].metadata
+            # PDF loaders usually save 'page' (int) and 'source' (file path)
+            page_num = meta.get('page', 'Unknown')
+            # Clean up the filename (remove full path if present)
+            raw_source = meta.get('source', 'Uploaded Doc')
+            doc_name = os.path.basename(raw_source) if raw_source else "Document"
+            
+            source_info = f"{doc_name} (Page {page_num})"
+            
+            # Combine content from all retrieved docs for context
+            context_text = "\n\n".join([d.page_content for d in docs])
+        else:
+            context_text = "No specific rules found in database."
     else:
         context_text = "No rules loaded."
 
     # 2. Construct the Prompt
-    # We explicitly ask for JSON to ensure the frontend table can read it.
+    # We now inject 'source_info' into the instructions so the LLM adds it to the JSON.
     prompt = f"""
     You are a PRA Regulatory Reporting Assistant.
     User Scenario: "{query}"
     
-    Relevant Rules Found:
+    Relevant Rules/Context Found:
     {context_text}
+    
+    Source Metadata: {source_info}
     
     Task:
     1. Does this scenario match "Sovereign Exposure" (Govt/Gilt) or "Retail Exposure"?
@@ -78,7 +103,8 @@ def get_rag_response(query: str) -> AnalysisResponse:
             "field_id": "row_sovereign_exposure" OR "row_retail_exposure",
             "value": <number>,
             "rule_ref": "The Article number found in rules",
-            "reasoning": "One sentence explaining why."
+            "reasoning": "One sentence explaining why.",
+            "source_page": "{source_info}"
         }}
     }}
     """
@@ -93,10 +119,50 @@ def get_rag_response(query: str) -> AnalysisResponse:
         data = json.loads(content)
         
         if "data_update" in data and data["data_update"]:
+            # Ensure the source_page is set (in case LLM hallucinated or missed it)
+            if "source_page" not in data["data_update"]:
+                 data["data_update"]["source_page"] = source_info
+            
             update = CorepFieldUpdate(**data["data_update"])
             return AnalysisResponse(response_text=data["response_text"], data_update=update)
         else:
             return AnalysisResponse(response_text=data["response_text"], data_update=None)
             
     except Exception as e:
-        return AnalysisResponse(response_text=f"Error parsing Gemini response: {str(e)}", data_update=None)
+        print(f"Error parsing Gemini response: {e}")
+        # Return a safe error response instead of crashing
+        return AnalysisResponse(
+            response_text=f"I found relevant info in {source_info}, but I had trouble formatting the answer. Please try again.", 
+            data_update=None
+        )
+        
+async def process_document(file: UploadFile) -> AnalysisResponse:
+    """
+    Reads a file, extracts text, and asks the LLM to analyze it.
+    """
+    content = ""
+    
+    # 1. Extract Text based on file type
+    if file.filename.endswith(".pdf"):
+        # Read PDF bytes
+        pdf_bytes = await file.read()
+        reader = PdfReader(io.BytesIO(pdf_bytes))
+        # Extract text from first 2 pages (usually enough for summary)
+        for page in reader.pages[:2]: 
+            content += page.extract_text() or ""
+    elif file.filename.endswith(".txt"):
+        content = (await file.read()).decode("utf-8")
+    else:
+        return AnalysisResponse(response_text="Error: Only .pdf and .txt files are supported for now.")
+
+    # 2. Limit content length to avoid confusing the LLM
+    # (Keep it under ~2000 chars for this prototype)
+    truncated_content = content[:2000]
+
+    # 3. Create a Prompt for the LLM
+    # We pretend the document text is the "User Query"
+    prompt_context = f"Analyze this uploaded financial document snippet and extract capital requirements:\n\n{truncated_content}"
+    
+    # 4. Reuse your existing RAG logic!
+    # This is the smart part: We treat the document text just like a user chat message.
+    return get_rag_response(prompt_context)

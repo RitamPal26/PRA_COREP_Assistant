@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from schemas import AnalysisResponse
 from service import get_rag_response, initialize_vector_store
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import UploadFile, File
 
 # This function runs ONCE when the server starts
 @asynccontextmanager
@@ -28,3 +29,8 @@ app.add_middleware(
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_scenario(user_query: str):
     return get_rag_response(user_query)
+
+@app.post("/upload", response_model=AnalysisResponse)
+async def upload_document(file: UploadFile = File(...)):
+    from service import process_document # Import here to avoid circular loops
+    return await process_document(file)

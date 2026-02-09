@@ -1,25 +1,50 @@
-/* Reset & Base */
-#root {
-  width: 100%;
-  margin: 0;
-  padding: 0;
+/* =========================================
+   1. GLOBAL RESET (Crucial for Layouts)
+   ========================================= */
+* {
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
 }
 
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* Ensure root takes full screen */
+  width: 100%;
+  overflow: hidden;
+  /* Stop the browser window from scrolling */
+}
+
+/* =========================================
+   2. MAIN CONTAINER
+   ========================================= */
 .app-container {
   display: flex;
   height: 100vh;
+  /* Force full viewport height */
   width: 100vw;
   background-color: #f5f7fa;
   font-family: 'Inter', system-ui, sans-serif;
+  color: #1a1a1a;
 }
 
-/* --- Left Panel: Chat --- */
+/* =========================================
+   3. LEFT PANEL: CHAT
+   ========================================= */
 .chat-panel {
   width: 35%;
+  min-width: 300px;
+  /* Prevent it from getting too small */
   background: white;
   border-right: 1px solid #ddd;
   display: flex;
   flex-direction: column;
+  /* Stack Header, Chat, Input vertically */
+  height: 100%;
+  /* Take full height of parent */
 }
 
 .chat-panel header {
@@ -28,21 +53,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
+  /* Prevent header from shrinking */
 }
 
-.badge {
-  background: #e0e7ff;
-  color: #4338ca;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
+/* The Chat History Area - This is the ONLY thing that should scroll */
 .chat-window {
   flex: 1;
+  /* Takes up all remaining space */
   padding: 20px;
   overflow-y: auto;
+  /* Scroll ONLY here */
   background: #fafafa;
   display: flex;
   flex-direction: column;
@@ -69,12 +90,15 @@
   color: #1f2937;
 }
 
+/* Input Area - Sticks to the bottom */
 .input-area {
   padding: 20px;
   background: white;
   border-top: 1px solid #ddd;
   display: flex;
   gap: 10px;
+  flex-shrink: 0;
+  /* Prevent input area from shrinking */
 }
 
 .input-area input {
@@ -99,23 +123,30 @@
   background-color: #1d4ed8;
 }
 
-/* --- Right Panel: Report --- */
+/* =========================================
+   4. RIGHT PANEL: REPORT
+   ========================================= */
 .report-panel {
   width: 65%;
+  height: 100%;
+  /* Full height */
   padding: 30px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  /* Allow this panel to scroll if the report is long */
 }
 
 .corep-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
 
-.corep-table th, .corep-table td {
+.corep-table th,
+.corep-table td {
   border: 1px solid #e5e7eb;
   padding: 12px;
   text-align: left;
@@ -123,21 +154,24 @@
 
 .corep-table th {
   background-color: #f8fafc;
-  color: #64748b;
+  color: #334155;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.8rem;
 }
 
+.corep-table td {
+  color: #1f2937;
+}
+
 .data-cell {
   font-family: 'Courier New', monospace;
   font-weight: bold;
-  color: #0f172a;
   background-color: #fdfdfd;
 }
 
 .highlight-row {
-  background-color: #f0f9ff; /* Light blue highlight for updated rows */
+  background-color: #f0f9ff;
   transition: background-color 0.5s ease;
 }
 
@@ -152,63 +186,22 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
+  flex-shrink: 0;
 }
 
 .audit-card {
-  background: #fffbe6; /* Light yellow like a sticky note */
+  background: #fffbe6;
   border-left: 4px solid #d97706;
   padding: 15px;
   font-size: 0.9rem;
+  color: black;
 }
 
 .audit-card p {
   margin: 5px 0;
 }
 
-/* --- Responsive Design (Mobile & Tablet) --- */
-@media (max-width: 768px) {
-  
-  /* 1. Stack the panels vertically instead of side-by-side */
-  .app-container {
-    flex-direction: column;
-    height: auto; /* Allow the page to grow */
-    min-height: 100vh;
-  }
-
-  /* 2. Make Chat take the top 40% of the screen */
-  .chat-panel {
-    width: 100%;
-    height: 40vh; 
-    border-right: none;
-    border-bottom: 4px solid #e5e7eb;
-  }
-
-  /* 3. Make Report take the rest of the space */
-  .report-panel {
-    width: 100%;
-    height: auto;
-    padding: 15px;
-  }
-
-  /* 4. Fix the Table for small screens */
-  .table-wrapper {
-    overflow-x: auto; /* Allow table to scroll sideways if too wide */
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .corep-table {
-    min-width: 500px; /* Force table to keep its shape */
-  }
-
-  /* 5. Adjust Font Sizes */
-  h2 {
-    font-size: 1.2rem;
-  }
-}
-
-/* --- New Button Styles --- */
-
-/* Clear Chat Button (Simple Text) */
+/* Button Styles */
 .secondary-btn {
   background: transparent;
   border: 1px solid #ccc;
@@ -218,14 +211,14 @@
   font-size: 0.8rem;
   color: #555;
 }
+
 .secondary-btn:hover {
   background: #f0f0f0;
   color: #333;
 }
 
-/* Download CSV Button (Green Accent) */
 .download-btn {
-  background-color: #10b981; /* Green */
+  background-color: #10b981;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -234,8 +227,157 @@
   font-weight: bold;
   font-size: 0.9rem;
   transition: background-color 0.2s;
+  margin-top: 10px;
 }
 
 .download-btn:hover {
-  background-color: #059669; /* Darker Green */
+  background-color: #059669;
+}
+
+/* =========================================
+   5. RESPONSIVE (Mobile)
+   ========================================= */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    height: auto;
+    /* Allow growth on mobile */
+    min-height: 100vh;
+    overflow: auto;
+    /* Re-enable window scrolling for mobile */
+  }
+
+  .chat-panel {
+    width: 100%;
+    height: 50vh;
+    /* Fixed height for chat on mobile */
+    border-right: none;
+    border-bottom: 4px solid #e5e7eb;
+  }
+
+  .report-panel {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+/* Add this to your Button Styles section */
+.attach-btn {
+  background-color: #f3f4f6;
+  /* Light gray */
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  /* Make the paperclip icon larger */
+  transition: background 0.2s;
+}
+
+.attach-btn:hover {
+  background-color: #e5e7eb;
+}
+
+/* --- Editable Cell Styling --- */
+.input-cell {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  cursor: text;
+}
+
+.input-cell:focus-within {
+  border: 2px solid #2563eb;
+  /* Blue highlight when typing */
+  background-color: #fff;
+}
+
+.input-cell input {
+  border: none;
+  background: transparent;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100px;
+  text-align: right;
+  outline: none;
+  padding: 0;
+  margin: 0 4px;
+}
+
+/* Remove Arrows from Number Input */
+.input-cell input::-webkit-outer-spin-button,
+.input-cell input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.currency-symbol,
+.unit {
+  color: #64748b;
+  font-weight: normal;
+  user-select: none;
+}
+
+/* --- Scenario Comparison Styling --- */
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.scenario-badge {
+  background: #fff3cd;
+  color: #856404;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+  border: 1px solid #ffeeba;
+}
+
+.baseline-btn {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.baseline-btn:hover {
+  background: #f8f9fa;
+}
+
+.baseline-btn.active {
+  background: #fee2e2;
+  /* Light Red */
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+/* The Diff Tag (+5m or -2m) */
+.diff-tag {
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.diff-tag.pos {
+  background-color: #dcfce7;
+  /* Light Green */
+  color: #166534;
+}
+
+.diff-tag.neg {
+  background-color: #fee2e2;
+  /* Light Red */
+  color: #991b1b;
 }
