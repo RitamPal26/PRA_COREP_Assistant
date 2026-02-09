@@ -133,7 +133,7 @@ PRA_COREP_Assistant/
 │   ├── service.py       # RAG logic, PDF processing, and LLM handling
 │   ├── schemas.py       # Pydantic data models
 │   ├── requirements.txt # Python dependencies
-│   └── .env             # API Keys (Not committed to repo)
+│   └── .env
 ├── frontend/
 │   ├── src/
 │   │   ├── App.tsx      # Main React component (State management, UI logic)
